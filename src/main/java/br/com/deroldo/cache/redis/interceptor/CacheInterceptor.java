@@ -11,21 +11,20 @@ import javax.interceptor.InvocationContext;
 
 import org.apache.commons.lang3.StringUtils;
 
-import br.com.deroldo.cache.redis.annotation.Cache;
-import br.com.deroldo.cache.redis.domain.Envelope;
-import br.com.deroldo.cache.redis.properties.ApplicationProperties;
-import br.com.deroldo.cache.redis.properties.CacheProperties;
-import br.com.deroldo.cache.redis.repository.CacheRepository;
-
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+
+import br.com.deroldo.cache.redis.annotation.Cache;
+import br.com.deroldo.cache.redis.domain.Envelope;
+import br.com.deroldo.cache.redis.properties.CacheProperties;
+import br.com.deroldo.cache.redis.repository.CacheRepository;
 
 @Interceptor @Cache
 public class CacheInterceptor implements Serializable {
 	private static final long serialVersionUID = -583626753049504126L;
 
 	@Inject	
-	private ApplicationProperties applicationProperties;
+	private CacheProperties properties;
 	
 	@Inject
 	private CacheRepository cacheRepository;
@@ -40,10 +39,8 @@ public class CacheInterceptor implements Serializable {
 	public Object intercept(final InvocationContext context) throws Exception {
 		Object object = null;
 		
-		CacheProperties properties = this.applicationProperties.getCacheProperties();
-		
-		if (properties.isEnabled()){
-			Integer applicationTtl = properties.getTtl();
+		if (this.properties.isEnabled()){
+			Integer applicationTtl = this.properties.getTtl();
 			
 			final String key = getKey(context.getMethod(), context.getParameters());
 			final String json = this.cacheRepository.get(key);

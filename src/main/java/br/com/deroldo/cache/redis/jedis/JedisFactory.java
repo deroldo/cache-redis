@@ -9,20 +9,18 @@ import javax.inject.Inject;
 
 import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 
-import redis.clients.jedis.JedisPool;
-import br.com.deroldo.cache.redis.properties.ApplicationProperties;
 import br.com.deroldo.cache.redis.properties.CacheProperties;
+import redis.clients.jedis.JedisPool;
 
 public class JedisFactory implements Serializable{
 	private static final long serialVersionUID = -4037943715293182401L;
 
 	@Inject
-	private ApplicationProperties applicationProperties;
+	private CacheProperties cacheProperties;
 	
 	@Produces @ApplicationScoped
     public JedisPool getJedisPool(){
-		CacheProperties cacheProperties = this.applicationProperties.getCacheProperties();
-        return new JedisPool(new GenericObjectPoolConfig(), cacheProperties.getHost(), cacheProperties.getPort(), cacheProperties.getTtl());
+        return new JedisPool(new GenericObjectPoolConfig(), this.cacheProperties.getHost(), this.cacheProperties.getPort(), this.cacheProperties.getTtl());
     }
  
     public void detroy(@Disposes JedisPool jedisPool){
